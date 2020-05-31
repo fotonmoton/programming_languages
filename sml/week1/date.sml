@@ -1,6 +1,10 @@
 (* year * month * day *)
 type Date = int * int * int
 
+fun |> (x, f) = f x
+
+infix |>
+
 fun fold f lst acc = 
     case lst of
         [] => acc
@@ -28,5 +32,15 @@ fun number_in_month (
             else occurences 
     in
         fold count_month dates 0
+    end
+
+fun number_in_months (
+    dates: Date list,
+    months_to_find: int list
+): int =
+    let
+        fun count_months month acc = acc + number_in_month (dates, month)
+    in
+        fold count_months months_to_find 0
     end
 
