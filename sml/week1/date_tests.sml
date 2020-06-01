@@ -97,4 +97,26 @@ val () =
             "number_in_months: multiple dates with same month"
     end
 
+val () =
+    let
+        val dates = []
+        val month = 12
+        val expect = []
+    in
+        assert
+            (dates_in_month (dates, month) = expect)
+            "dates_in_month: returns empty list on empty dates"
+    end
+
+val () =
+    let
+        val dates = [(2000, 11, 31), (2000, 12, 30),  (2000, 12, 31)]
+        val month = 12
+        val expect = [(2000, 12, 30),  (2000, 12, 31)]
+    in
+        assert
+            (dates_in_month (dates, month) = expect)
+            "dates_in_month: filter non matching dates"
+    end
+
 val () = complete ()
