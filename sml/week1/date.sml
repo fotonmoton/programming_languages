@@ -1,23 +1,13 @@
+use "operators.sml";
+
 (* year * month * day *)
 type Date = int * int * int
 
-(* 
-    Pipe operator. 
-    Simply to write code like "data |> fun" instead "fun data".
-    Then you can "pipe" results to functions via partial application:
-    
-    fun square a b = a * b
-    fun sum a b = a + b
-
-    10 |> sum 10 |> square 2 // 40      
-*)
-fun |> (x, f) = f x
-
-(* composition operator *)
-fun $ (f, x) = f x
-
-infix |>
-infix $
+(* can't use pattern matching for now *)
+(* fun fold f acc lst = 
+    case lst of
+    [] => acc
+    | head :: tail => fold f (f head acc) tail *)
 
 fun fold f acc lst = 
     if lst = []
@@ -64,15 +54,34 @@ fun range from to =
         generate from to [] |> reverse
     end
 
-(* naive sort, will blow up stack :( *)
-fun sort f lst =
+(* naive sort, will blow up the stack. Can't use pattern matching for now :( *)
+(* fun sort f lst =
     case lst of
     [] => []
     | hd :: [] => [hd]
     | first :: second :: rest =>
         if f first second
         then second :: first :: sort f rest
-        else first :: second :: sort f rest
+        else first :: second :: sort f rest *)
+
+(* also will blow up the stack *)
+fun sort f lst =
+    if lst = []
+        then []
+        else
+            if tl lst = []
+            then lst
+            else
+                let
+                    val first = hd lst
+                    val second = hd $ tl lst
+                    val rest = tl $ tl lst
+                    val greater = f first second
+                in
+                    if greater
+                    then second :: first :: sort f rest
+                    else first :: second :: sort f rest
+                end
 
 fun is_older ((y1, m1, d1): Date, (y2, m2, d2): Date): bool =
         let
@@ -169,7 +178,7 @@ fun what_month (day: int): int =
         number_before_reaching_sum (day, months) + 1
     end
 
-(* correct but to complex for such problem *)
+(* correct but too complex for such problem *)
 (* fun month_range (day1: int, day2: int): int list =
     let
       fun append_month day months = what_month day :: months 
