@@ -54,6 +54,22 @@ fun range from to =
         generate from to [] |> reverse
     end
 
+fun empty lst = lst = []
+
+(* not efficient but works *)
+fun exists elem lst =
+    filter (fn needle => elem = needle) lst |> empty |> not 
+
+fun uniqe lst =
+    let
+        fun find_uniqe elem uniqe_elems =
+            if (exists elem uniqe_elems)
+            then uniqe_elems
+            else elem :: uniqe_elems
+    in
+        fold find_uniqe [] lst
+    end
+
 (* naive sort, will blow up the stack. Can't use pattern matching for now :( *)
 (* fun sort f lst =
     case lst of
@@ -201,3 +217,15 @@ fun oldest (dates: Date list): Date option =
         then NONE
         else sort compare dates |> hd |> SOME   
     end
+
+fun number_in_months_challenge (
+    dates: Date list, 
+    months_to_find: int list
+): int =
+    number_in_months (dates, uniqe months_to_find)
+
+fun dates_in_months_challenge (
+    dates: Date list, 
+    in_months: int list
+): Date list =
+    dates_in_months (dates, uniqe in_months)

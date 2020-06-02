@@ -10,8 +10,12 @@
 *)
 fun |> (x, f) = f x
 
-(* composition operator *)
+(* apply operator *)
 fun $ (f, x) = f x
+
+(* composition operator *)
+fun >> (f, g) x = g(f(x))
 
 infix |>
 infix $
+infix >>

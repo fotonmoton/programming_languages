@@ -1,11 +1,14 @@
 use "test.sml";
 use "date.sml";
 
-
 val () =
     assert
         (range 1 2 = [1, 2])
         "range: generates sequence in right order" 
+
+val () = assert
+        (exists 1 [] = false)
+        "exists: empty list" 
 
 val () = assert (sort (fn a => fn b => a > b)  [] = []) "sort: empty list"
 val () = assert (sort (fn a => fn b => a > b)  [1] = [1]) "sort: one val"
@@ -236,7 +239,7 @@ val () =
         val dates = []
         val expect = NONE 
     in
-        assert (oldest dates = expect) "oldest: retruns NONE on empty list"
+        assert (oldest dates = expect) "oldest: returns NONE on empty list"
     end
 
 val () =
@@ -244,7 +247,7 @@ val () =
         val dates = [(2000, 11, 31)]
         val expect = SOME (2000, 11, 31)
     in
-        assert (oldest dates = expect) "oldest: retruns SOME date"
+        assert (oldest dates = expect) "oldest: returns SOME date"
     end
 
 val () =
@@ -252,7 +255,29 @@ val () =
         val dates = [(2020, 11, 31), (2021, 11, 31)]
         val expect = SOME (2020, 11, 31)
     in
-        assert (oldest dates = expect) "oldest: retruns oldest"
+        assert (oldest dates = expect) "oldest: returns oldest"
+    end
+
+val () =
+    let
+        val dates = [(2000, 11, 31), (2000, 11, 31)]
+        val months = [11, 11]
+        val expect = 2
+    in
+        assert
+            (number_in_months_challenge (dates, months) = expect)
+            "number_in_months_challenge: ignore month duplicates"
+    end
+
+val () =
+    let
+        val dates = [(2000, 11, 31), (2000, 12, 30),  (2000, 12, 31)]
+        val months = [11, 11]
+        val expect = [(2000, 11, 31)]
+    in
+        assert
+            (dates_in_months_challenge (dates, months) = expect)
+            "dates_in_months_challenge: ignore month duplicates"
     end
 
 val () = complete ()
