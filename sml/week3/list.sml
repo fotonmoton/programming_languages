@@ -2,23 +2,22 @@ use "operators.sml";
 
 fun cons head tail = head :: tail
 
-fun fold f acc lst =
+fun foldl f acc lst =
     case lst of
     [] => acc
-    | head :: tail => fold f (f head acc) tail
+    | head :: tail => foldl f (f head acc) tail
 
-fun reverse lst =
-    let
-        fun f elm acc = elm :: acc
-    in
-        fold f [] lst
-    end
+fun reverse lst = foldl cons [] lst
+
+fun foldr f acc = foldl f acc >> reverse    
+
+fun map f = foldr (f >> cons) []
 
 fun filter predicate lst =
     let
         fun f elm acc = if predicate elm then elm :: acc else acc
     in
-        lst |> fold f [] |> reverse
+        foldr f [] lst
     end
 
 fun empty lst = lst = []
@@ -27,4 +26,5 @@ fun empty lst = lst = []
 fun exists elem lst =
      lst 
      |> filter (fn needle => elem = needle) 
-     |> not o empty
+     |> empty
+     |> not

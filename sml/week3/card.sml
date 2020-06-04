@@ -31,7 +31,7 @@ val remove_card: remove_card = fn (cards, to_remove, exp) =>
             then (found, card :: acc)
             else (true orelse found, acc)
     in
-        case fold filter (false, []) cards of
+        case foldl filter (false, []) cards of
         (true, filtered) => filtered
         | (false, _) => raise exp
     end
@@ -47,10 +47,11 @@ val rec all_same_color: all_same_color = fn cards =>
 
 type sum_cards = card list -> int
 val sum_cards: sum_cards = fn cards =>
-    cards |> fold (fn card => fn sum => card_value card + sum) 0 
+    cards |> foldl (fn card => fn sum => card_value card + sum) 0 
 
+fun sum a b = a + b
 (* even shorter via partial application :) *)
-val sum_cards: sum_cards = fold (fn card => fn sum => card_value card + sum) 0 
+val sum_cards: sum_cards = foldl (card_value >> sum) 0 
 
 type score = card list * int -> int
 val score: score = fn (cards, goal) =>
@@ -83,5 +84,5 @@ val officiate: officiate = fn (deck, moves, goal) =>
         
         fun round hand = score (hand, goal)
     in
-        moves |> fold play (deck, []) |> #2 |> round 
+        moves |> foldl play (deck, []) |> #2 |> round 
     end

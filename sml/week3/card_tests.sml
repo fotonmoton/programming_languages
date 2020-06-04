@@ -212,4 +212,11 @@ val 0 =
                 |> (fn _ => expected)
     end
 
+fun by2 a = a * 2 
+
+val () =
+    assert
+    $ map by2 [1, 2, 3] = [2, 4, 6]
+    $ "map test"
+
 val () = complete ()
