@@ -27,5 +27,4 @@ fun empty lst = lst = []
 fun exists elem lst =
      lst 
      |> filter (fn needle => elem = needle) 
-     |> empty 
-     |> not
+     |> not o empty
