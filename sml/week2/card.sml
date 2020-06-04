@@ -36,6 +36,7 @@ val remove_card: remove_card = fn (cards, to_remove, exp) =>
         | (false, _) => raise exp
     end
 
+(* not tail recursive *)
 type all_same_color = card list -> bool
 val rec all_same_color: all_same_color = fn cards =>
     case cards of
@@ -47,6 +48,9 @@ val rec all_same_color: all_same_color = fn cards =>
 type sum_cards = card list -> int
 val sum_cards: sum_cards = fn cards =>
     cards |> fold (fn card => fn sum => card_value card + sum) 0 
+
+(* even shorter via partial application :) *)
+val sum_cards: sum_cards = fold (fn card => fn sum => card_value card + sum) 0 
 
 type score = card list * int -> int
 val score: score = fn (cards, goal) =>

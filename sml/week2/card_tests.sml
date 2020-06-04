@@ -2,28 +2,34 @@ use "test.sml";
 use "card.sml";
 
 val () =
-    assert (card_color (Spade, King) = Black)
-    "card_color: returns right color"
+    assert 
+    $ card_color (Spade, King) = Black
+    $ "card_color: returns right color"
 
 val () =
-    assert (card_color (Heart, King) = Red)
-    "card_color: returns right color x2"
+    assert 
+    $ card_color (Heart, King) = Red
+    $ "card_color: returns right color x2"
 
 val () =
-    assert (card_value (Heart, Num 5) = 5)
-    "card_value: number card"
+    assert 
+    $ card_value (Heart, Num 5) = 5
+    $ "card_value: number card"
 
 val () =
-    assert (card_value (Heart, Ace) = 11)
-    "card_value: ace is 11"
+    assert 
+    $ card_value (Heart, Ace) = 11
+    $ "card_value: ace is 11"
 
 val () =
-    assert (card_value (Heart, Jack) = 10)
-    "card_value: jack is 10"
+    assert 
+    $ card_value (Heart, Jack) = 10
+    $ "card_value: jack is 10"
 
 val () =
-    assert (remove_card ([(Heart, Jack)], (Heart, Jack), IllegalMove) = [])
-    "remove_card: removes card"
+    assert 
+    $ remove_card ([(Heart, Jack)], (Heart, Jack), IllegalMove) = []
+    $ "remove_card: removes card"
 
 val () =
     let
@@ -33,24 +39,21 @@ val () =
         val exp = IllegalMove
     in
         assert 
-            (remove_card (deck, card, exp) = expected)
-            "remove_card: leaves duplicates"
+        $ remove_card (deck, card, exp) = expected
+        $ "remove_card: leaves duplicates"
     end
 
-val _ =
+val [] =
     let
         val deck = []
         val card = (Heart, Jack)
-        val expected = IllegalMove
+        val expected = []
         val exp = IllegalMove
     in
         remove_card (deck, card, exp)
             handle IllegalMove =>
-                let
-                    val () = assert true "remove_card: raises exception"
-                in
-                    []
-                end
+                assert true "remove_card: raises exception" 
+                |> (fn _ => expected)
     end
 
 val () =
@@ -201,12 +204,12 @@ val 0 =
         val deck = [(Club, Jack), (Club, Num 3), (Heart, Num 10), (Club, Jack)]
         val moves = [Discard (Club, Jack), Draw, Draw, Draw]
         val goal = 19
-        val expected = 6
+        val expected = 0
     in
         officiate (deck, moves, goal)
             handle IllegalMove =>
                 assert true "officiate: raises exception on missing card"
-                |> (fn _ => 0)
+                |> (fn _ => expected)
     end
 
 val () = complete ()
