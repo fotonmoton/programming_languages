@@ -9,6 +9,7 @@ fun foldl f acc lst =
 
 fun reverse lst = foldl cons [] lst
 
+(* wrong definition, fold doesn't always returns array *)
 fun foldr f acc = foldl f acc >> reverse    
 
 fun map f = foldr (f >> cons) []
