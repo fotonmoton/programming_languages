@@ -2,6 +2,8 @@ use "operators.sml";
 
 fun cons head tail = head :: tail
 
+fun append a b = a @ b
+
 fun foldl f acc lst =
     case lst of
     [] => acc
@@ -9,6 +11,7 @@ fun foldl f acc lst =
 
 fun reverse lst = foldl cons [] lst
 
+(* wrong implementation *)
 fun foldr f acc = foldl f acc >> reverse    
 
 fun map f = foldr (f >> cons) []

@@ -44,5 +44,47 @@ val () =
     $ rev_string "string" = "gnirts"
     $ "rev_string: reverses string"
 
+val NONE =
+    first_answer (fn elm => NONE) []
+        handle NoAnswer =>
+            assert true "first_answer: rises on on empty lst" 
+            |> (fn _ => NONE)
+
+val NONE =
+    first_answer (fn elm => NONE) ["elm"]
+        handle NoAnswer =>
+            assert true "first_answer: rises on miss" 
+            |> (fn _ => NONE)
+
+val () =
+    assert
+    $ first_answer (fn elm => SOME elm) ["elm"] = "elm"
+    $ "first_answer: returns first answer"
+
+
+val () =
+    assert
+    $ first_answer 
+        (fn elm => if elm = "second" then SOME elm else NONE) 
+        ["elm", "second"] = "second"
+    $ "first_answer: returns some answer"
+
+val () =
+    assert
+    $ all_answers (fn elm => SOME elm) [] = SOME []
+    $ "all_answers: returns SOME [] on []"
+
+val () =
+    assert
+    $ all_answers (fn elm => SOME [elm]) ["a", "b"] = SOME ["a", "b"]
+    $ "all_answers: returns all answers"
+
+val () =
+    assert
+    $ all_answers 
+        (fn elm => if elm = "a" then SOME [elm] else NONE) 
+        ["a", "b"] = NONE
+    $ "all_answers: NONE on at least one NONE"
+
 
 val () = complete ()
