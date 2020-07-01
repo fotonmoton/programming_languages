@@ -1,6 +1,20 @@
 use "operators.sml";
 use "list.sml";
 
+datatype pattern = 
+    Wildcard 
+    | Variable of string 
+    | UnitP 
+    | ConstP of int
+    | TupleP of pattern list 
+    | ConstructorP of string * pattern
+
+datatype valu = 
+    Const of int 
+    | Unit 
+    | Tuple of valu list 
+    | Constructor of string * valu
+
 exception NoAnswer
 
 fun first str = String.sub (str, 0)
@@ -37,7 +51,10 @@ fun first_answer f lst =
         NONE => first_answer f tail
         | SOME answer => answer
 
-fun all_answers (f: ('a -> 'b list option)) lst: 'b list option =
+fun all_answers 
+    (f: ('a -> 'b list option)) 
+    (lst: 'a list)
+    : 'b list option =
     let
         fun collect lst acc =
             case lst of
@@ -49,3 +66,58 @@ fun all_answers (f: ('a -> 'b list option)) lst: 'b list option =
     in
         collect lst []
     end
+
+fun sum a b = a + b
+(*  functions below are too similar to leave them as is.
+    Find a way how to extract reapiting code
+ *)
+fun count_wildcards (p: pattern) : int =
+    case p of
+    Wildcard => 1
+    | TupleP lst => foldl (count_wildcards >> sum) 0 lst
+    | ConstructorP (_, pattern) => count_wildcards pattern
+    | _ => 0
+ 
+fun collect_variables (p: pattern) : string list =
+    case p of
+    Variable str => [str]
+    | TupleP lst => foldl (collect_variables >> append) [] lst
+    | ConstructorP (_, pattern) => collect_variables pattern
+    | _ => []
+
+fun count_variable_lengths (p: pattern) : int =
+    p |> collect_variables |> foldl (size >> sum) 0
+
+fun count_wild_and_variable_lengths (p: pattern) : int =
+    count_wildcards p + count_variable_lengths p
+
+fun count_some_var (var, pattern) =
+    case pattern of
+       Variable v => if v = var then 1 else 0
+    | TupleP lst => foldl (fn p => fn acc => acc + count_some_var (var, p)) 0 lst
+    | ConstructorP (_, pattern) => count_some_var (var, pattern)
+    | _ => 0
+
+fun check_pat (p: pattern) : bool =
+    p 
+    |> collect_variables 
+    |> sort bigger_or_equal
+    |> distinct
+
+fun match (v: valu, p: pattern) : (string * valu) list option = 
+    case (p, v) of
+    (Wildcard, _) => SOME []
+    | (Variable a, v) => SOME [(a, v)]
+    | (UnitP, Unit) => SOME []
+    | (ConstP c1, Const c2) => if c1 = c2 then SOME [] else NONE
+    | (TupleP ps, Tuple vs) => (vs, ps) |> ListPair.zip |> all_answers match
+    | (ConstructorP (s1, p), Constructor (s2, v)) =>
+        if s1 = s2 then match (v, p) else NONE
+    | _ => NONE
+    
+fun first_match 
+    (v: valu) 
+    (patterns: pattern list) : 
+    (string * valu) list option =
+    SOME $ first_answer (fn p => match (v, p)) patterns
+        handle NoAnswer => NONE
