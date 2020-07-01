@@ -1,4 +1,24 @@
-use "operators.sml";
+(* 
+    Pipe operator. 
+    Simply to write code like "data |> fun" instead "fun data".
+    Then you can "pipe" results to functions via partial application:
+    
+    fun square a b = a * b
+    fun sum a b = a + b
+
+    10 |> sum 10 |> square 2 // 40      
+*)
+fun |> (x, f) = f x
+
+(* apply operator *)
+fun $ (f, x) = f x
+
+(* composition operator *)
+fun >> (f, g) x = g(f(x))
+
+infix |>
+infix $
+infix >>
 
 (* year * month * day *)
 type Date = int * int * int
@@ -71,6 +91,7 @@ fun uniqe lst =
     end
 
 (* naive sort, will blow up the stack. Can't use pattern matching for now :( *)
+(* also incorrect *)
 (* fun sort f lst =
     case lst of
     [] => []
@@ -81,7 +102,7 @@ fun uniqe lst =
         else first :: second :: sort f rest *)
 
 (* also will blow up the stack *)
-fun sort f lst =
+fun sort' f lst =
     if lst = []
         then []
         else
@@ -95,18 +116,25 @@ fun sort f lst =
                     val greater = f first second
                 in
                     if greater
-                    then second :: first :: sort f rest
-                    else first :: second :: sort f rest
+                    then second :: sort' f (first :: rest)
+                    else first :: sort' f (second :: rest)
                 end
+
+(* simple recursive convergence *)
+fun fix f g x = 
+    if f g x = x 
+    then x 
+    else fix f g (f g x)
+
+(* naive bubble sort *)
+fun sort f x = fix sort' f x
 
 fun is_older ((y1, m1, d1): Date, (y2, m2, d2): Date): bool =
         let
-            val same_dates = y1 = y2 andalso m1 = m2 andalso d1 = d2
-            val older = y1 <= y2 andalso m1 <= m2 andalso d1 <= d2
+            val first_days = y1 * 360 + m1 * 30 + d1
+            val second_days = y2 * 360 + m2 * 30 + d2
         in
-            if same_dates
-            then false
-            else older
+            first_days < second_days
         end
 
 fun number_in_month (dates: Date list, month_to_find: int): int =
@@ -170,16 +198,12 @@ fun date_to_string ((year, month, day): Date): string =
             "December"
         ]
 
-        val string_month = get_nth (months, month - 1)
+        val string_month = get_nth (months, month)
 
         val to_str = Int.toString
 
-        fun pad num =
-            if num < 10
-            then "0" ^ to_str num
-            else to_str num
     in
-        string_month ^ " " ^ pad day ^ ", " ^ to_str year
+        string_month ^ " " ^ to_str day ^ ", " ^ to_str year
     end
 
 fun number_before_reaching_sum (sum: int, numbers: int list): int =

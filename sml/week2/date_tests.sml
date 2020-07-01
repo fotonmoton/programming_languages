@@ -19,6 +19,11 @@ val () =
 
 val () =
     assert
+        (is_older ((1,2,25), (6,7,8)) = true)
+        "is_older: first date older than second by year and month" 
+
+val () =
+    assert
         (is_older ((1999, 12, 31), (1999, 12, 31)) = false)
         "is_older: same dates evaluates to false" 
 
@@ -185,7 +190,12 @@ val () =
 
 val () =
     assert
-        (date_to_string ((2020, 06, 01)) = "May 01, 2020")
+        (date_to_string (2020, 06, 01) = "June 1, 2020")
+        "date_to_string: returns correct string"
+
+val () =
+    assert
+        (date_to_string (3, 1, 1) = "January 1, 3")
         "date_to_string: returns correct string"
 
 val () =
@@ -254,6 +264,14 @@ val () =
     let 
         val dates = [(2020, 11, 31), (2021, 11, 31)]
         val expect = SOME (2020, 11, 31)
+    in
+        assert (oldest dates = expect) "oldest: returns oldest"
+    end
+
+val () =
+    let 
+        val dates = [(5,5,2), (5, 10, 2), (5, 2, 2), (5, 12, 2)]
+        val expect = SOME (5, 2, 2)
     in
         assert (oldest dates = expect) "oldest: returns oldest"
     end
